@@ -1,4 +1,6 @@
-import './assets/main.css'
+import './assets/main.css' //Nuestro css
+import 'bootstrap/dist/css/bootstrap.min.css' //Css de bootstrap
+import 'bootstrap-icons/font/bootstrap-icons.css' //Css de bootstrap icons
 
 import React from 'react'
 import ReactDOM from 'react-dom/client'

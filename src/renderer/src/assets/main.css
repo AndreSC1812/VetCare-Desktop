@@ -1,163 +1,123 @@
-@import './base.css';
+/* styles.css */
 
 body {
+  background-color: #3bbba4; /* Fondo con el color principal */
+  font-family: 'Arial', sans-serif;
+}
+
+/* Estilos del login */
+.login-container {
   display: flex;
-  align-items: center;
   justify-content: center;
-  overflow: hidden;
-  background-image: url('./wavy-lines.svg');
-  background-size: cover;
-  user-select: none;
-}
-
-code {
-  font-weight: 600;
-  padding: 3px 5px;
-  border-radius: 2px;
-  background-color: var(--color-background-mute);
-  font-family:
-    ui-monospace,
-    SFMono-Regular,
-    SF Mono,
-    Menlo,
-    Consolas,
-    Liberation Mono,
-    monospace;
-  font-size: 85%;
-}
-
-#root {
-  display: flex;
   align-items: center;
+  height: 100vh;
+  background-color: #3bbba4; /* Fondo de la página */
+}
+
+.login-card {
+  background-color: white; /* Fondo blanco para el formulario */
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+h2 {
+  color: #3bbba4; /* Título en el color Vetcare */
+}
+
+.form-control {
+  border: 2px solid #3bbba4; /* Bordes acorde al color Vetcare */
+  padding: 10px;
+  font-size: 1rem;
+}
+
+.btn {
+  background-color: #3bbba4;
+  color: white;
+  width: 100%;
+  padding: 10px;
+}
+
+.btn:hover {
+  background-color: #35a18d;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+/*para el registro*/
+.register-container {
+  display: flex;
   justify-content: center;
-  flex-direction: column;
-  margin-bottom: 80px;
-}
-
-.logo {
-  margin-bottom: 20px;
-  -webkit-user-drag: none;
-  height: 128px;
-  width: 128px;
-  will-change: filter;
-  transition: filter 300ms;
-}
-
-.logo:hover {
-  filter: drop-shadow(0 0 1.2em #6988e6aa);
-}
-
-.creator {
-  font-size: 14px;
-  line-height: 16px;
-  color: var(--ev-c-text-2);
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-
-.text {
-  font-size: 28px;
-  color: var(--ev-c-text-1);
-  font-weight: 700;
-  line-height: 32px;
-  text-align: center;
-  margin: 0 10px;
-  padding: 16px 0;
-}
-
-.tip {
-  font-size: 16px;
-  line-height: 24px;
-  color: var(--ev-c-text-2);
-  font-weight: 600;
-}
-
-.react {
-  background: -webkit-linear-gradient(315deg, #087ea4 55%, #7c93ee);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: 700;
-}
-
-.actions {
-  display: flex;
-  padding-top: 32px;
-  margin: -6px;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-}
-
-.action {
-  flex-shrink: 0;
-  padding: 6px;
-}
-
-.action a {
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-  border: 1px solid transparent;
-  text-align: center;
-  font-weight: 600;
-  white-space: nowrap;
-  border-radius: 20px;
-  padding: 0 20px;
-  line-height: 38px;
-  font-size: 14px;
-  border-color: var(--ev-button-alt-border);
-  color: var(--ev-button-alt-text);
-  background-color: var(--ev-button-alt-bg);
-}
-
-.action a:hover {
-  border-color: var(--ev-button-alt-hover-border);
-  color: var(--ev-button-alt-hover-text);
-  background-color: var(--ev-button-alt-hover-bg);
-}
-
-.versions {
-  position: absolute;
-  bottom: 30px;
-  margin: 0 auto;
-  padding: 15px 0;
-  font-family: 'Menlo', 'Lucida Console', monospace;
-  display: inline-flex;
-  overflow: hidden;
   align-items: center;
-  border-radius: 22px;
-  background-color: #202127;
-  backdrop-filter: blur(24px);
+  height: 100vh;
+  background-color: #3bbba4; /* Fondo de la página */
 }
 
-.versions li {
-  display: block;
-  float: left;
-  border-right: 1px solid var(--ev-c-gray-1);
-  padding: 0 20px;
-  font-size: 14px;
-  line-height: 14px;
-  opacity: 0.8;
-  &:last-child {
-    border: none;
-  }
+.register-card {
+  background-color: white; /* Fondo blanco para el formulario */
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
 }
 
-@media (max-width: 720px) {
-  .text {
-    font-size: 20px;
-  }
+h2 {
+  color: #3bbba4; /* Título en el color Vetcare */
 }
 
-@media (max-width: 620px) {
-  .versions {
-    display: none;
-  }
+.form-control {
+  border: 2px solid #3bbba4; /* Bordes acorde al color Vetcare */
+  padding: 10px;
+  font-size: 1rem;
 }
 
-@media (max-width: 350px) {
-  .tip,
-  .actions {
-    display: none;
-  }
+.btn {
+  background-color: #3bbba4;
+  color: white;
+  width: 100%;
+  padding: 10px;
+}
+
+.btn:hover {
+  background-color: #35a18d;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+/* Para el toggle */
+.input-group {
+  border-radius: 0; /* Eliminar bordes redondeados */
+}
+
+.input-group .btn {
+  background-color: #3bbba4; /* Color de fondo del botón */
+  border: 2px solid #3bbba4; /* Borde del mismo color que el botón */
+  border-radius: 0 0.375rem 0.375rem 0; /* Bordes redondeados a la derecha */
+  color: white; /* Color del texto e ícono */
+}
+
+.input-group .btn:hover {
+  background-color: #35a18d; /* Color al pasar el mouse */
+  border-color: #35a18d; /* Cambiar el color del borde al pasar el mouse */
+}
+
+.input-group .btn i {
+  color: white; /* Color del ícono */
 }
