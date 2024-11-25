@@ -11,17 +11,15 @@ function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false) // Estado para el toggle de contraseña
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false) // Estado para el toggle de confirmación
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const navigate = useNavigate()
 
   const handleRegister = async (e) => {
     e.preventDefault()
 
-    // Verificación de contraseñas
     if (password !== confirmPassword) {
       setError('Las contraseñas no coinciden')
-      console.log('Error: Las contraseñas no coinciden')
       return
     }
 
@@ -39,7 +37,8 @@ function RegisterPage() {
       const response = await registerRequest(veterinarian)
 
       if (response.status === 201) {
-        navigate('/dashboard')
+        localStorage.setItem('token', response.data.token)
+        navigate('/setup')
       } else {
         setError('Error al registrar, intenta de nuevo')
       }
@@ -55,18 +54,18 @@ function RegisterPage() {
       <div className="register-card">
         <div className="text-center">
           <img src={vetcareLogo} alt="Vetcare Logo" width="150" />
-          <h2 className="mt-3">Registrarse</h2>
+          <h2 className="mt-3 mb-3">Registrarse</h2>
         </div>
 
         {error && <div className="alert alert-danger">{error}</div>}
 
         <form onSubmit={handleRegister}>
           <div className="form-group">
-            <label htmlFor="username">Nombre de Usuario</label>
             <input
               type="text"
               className="form-control"
               id="username"
+              placeholder="Nombre de Usuario" // Cambiamos label por placeholder
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -74,11 +73,11 @@ function RegisterPage() {
             />
           </div>
           <div className="form-group mt-3">
-            <label htmlFor="email">Correo Electrónico</label>
             <input
               type="email"
               className="form-control"
               id="email"
+              placeholder="Correo Electrónico" // Cambiamos label por placeholder
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -86,12 +85,12 @@ function RegisterPage() {
             />
           </div>
           <div className="form-group mt-3">
-            <label htmlFor="password">Contraseña</label>
             <div className="input-group">
               <input
-                type={showPassword ? 'text' : 'password'} // Alterna entre texto y contraseña
+                type={showPassword ? 'text' : 'password'}
                 className="form-control"
                 id="password"
+                placeholder="Contraseña" // Cambiamos label por placeholder
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -101,21 +100,20 @@ function RegisterPage() {
                 <button
                   type="button"
                   className="btn"
-                  onClick={() => setShowPassword(!showPassword)} // Cambia el estado del toggle
+                  onClick={() => setShowPassword(!showPassword)}
                 >
-                  <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>{' '}
-                  {/* Ícono de ojo */}
+                  <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
                 </button>
               </div>
             </div>
           </div>
           <div className="form-group mt-3">
-            <label htmlFor="confirmPassword">Confirmar Contraseña</label>
             <div className="input-group">
               <input
-                type={showConfirmPassword ? 'text' : 'password'} // Alterna entre texto y contraseña
+                type={showConfirmPassword ? 'text' : 'password'}
                 className="form-control"
                 id="confirmPassword"
+                placeholder="Confirmar Contraseña" // Cambiamos label por placeholder
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
@@ -125,10 +123,9 @@ function RegisterPage() {
                 <button
                   type="button"
                   className="btn"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)} // Cambia el estado del toggle
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
-                  <i className={`bi ${showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>{' '}
-                  {/* Ícono de ojo */}
+                  <i className={`bi ${showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
                 </button>
               </div>
             </div>

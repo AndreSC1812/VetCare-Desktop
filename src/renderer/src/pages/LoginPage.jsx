@@ -9,7 +9,7 @@ function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false) // Estado para el toggle de contraseña
+  const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
 
   const handleLogin = async (e) => {
@@ -40,31 +40,31 @@ function LoginPage() {
       <div className="login-card">
         <div className="text-center">
           <img src={vetcareLogo} alt="Vetcare Logo" width="150" />
-          <h2 className="mt-3">Iniciar Sesión</h2>
+          <h2 className="mt-3 mb-3">Iniciar Sesión</h2>
         </div>
 
         {error && <div className="alert alert-danger">{error}</div>}
 
         <form onSubmit={handleLogin}>
           <div className="form-group">
-            <label htmlFor="email">Correo Electrónico</label>
             <input
               type="email"
               className="form-control"
               id="email"
+              placeholder="Correo Electrónico"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              style={{ borderColor: '#3bbba4' }} // Bordes acorde al color Vetcare
+              style={{ borderColor: '#3bbba4' }}
             />
           </div>
           <div className="form-group mt-3">
-            <label htmlFor="password">Contraseña</label>
             <div className="input-group">
               <input
-                type={showPassword ? 'text' : 'password'} // Alterna entre texto y contraseña
+                type={showPassword ? 'text' : 'password'}
                 className="form-control"
                 id="password"
+                placeholder="Contraseña"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -73,11 +73,11 @@ function LoginPage() {
               <div className="input-group-append">
                 <button
                   type="button"
-                  className="btn btn-outline-secondary"
-                  onClick={() => setShowPassword(!showPassword)} // Cambia el estado del toggle
+                  className="btn"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{ border: 'none' }} // Quitar borde en el botón
                 >
-                  <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>{' '}
-                  {/* Ícono de ojo */}
+                  <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
                 </button>
               </div>
             </div>
