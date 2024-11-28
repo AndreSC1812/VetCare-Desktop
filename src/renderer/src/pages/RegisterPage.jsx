@@ -43,7 +43,12 @@ function RegisterPage() {
         setError('Error al registrar, intenta de nuevo')
       }
     } catch (error) {
-      setError('Error en la conexión, intenta de nuevo')
+      // Si el error tiene una respuesta del backend, mostramos el mensaje específico
+      if (error.response && error.response.data && error.response.data.message) {
+        setError(error.response.data.message)
+      } else {
+        setError('Error en la conexión, intenta de nuevo')
+      }
     } finally {
       setLoading(false)
     }
@@ -65,7 +70,7 @@ function RegisterPage() {
               type="text"
               className="form-control"
               id="username"
-              placeholder="Nombre de Usuario" // Cambiamos label por placeholder
+              placeholder="Nombre de Usuario"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -77,7 +82,7 @@ function RegisterPage() {
               type="email"
               className="form-control"
               id="email"
-              placeholder="Correo Electrónico" // Cambiamos label por placeholder
+              placeholder="Correo Electrónico"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -90,7 +95,7 @@ function RegisterPage() {
                 type={showPassword ? 'text' : 'password'}
                 className="form-control"
                 id="password"
-                placeholder="Contraseña" // Cambiamos label por placeholder
+                placeholder="Contraseña"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -113,7 +118,7 @@ function RegisterPage() {
                 type={showConfirmPassword ? 'text' : 'password'}
                 className="form-control"
                 id="confirmPassword"
-                placeholder="Confirmar Contraseña" // Cambiamos label por placeholder
+                placeholder="Confirmar Contraseña"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required

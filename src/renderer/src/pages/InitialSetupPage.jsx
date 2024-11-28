@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { uploadProfileImageRequest, updateProfileRequest } from '../api/profile'
 
 function InitialSetupPage() {
+  const [fullname, setFullname] = useState('') // Nuevo estado para el nombre completo
   const [specialization, setSpecialization] = useState('')
   const [yearsOfExperience, setYearsOfExperience] = useState('')
   const [clinicAddress, setClinicAddress] = useState('')
@@ -10,18 +11,17 @@ function InitialSetupPage() {
   const [profileImage, setProfileImage] = useState(null)
   const [previewImage, setPreviewImage] = useState(null)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('') // Nuevo estado para el mensaje de éxito
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  // Manejador para mostrar la vista previa de la imagen
   const handleImageChange = (e) => {
     const file = e.target.files[0]
     setProfileImage(file)
     if (file) {
-      // Validamos que sea una imagen
       if (file.type.startsWith('image/')) {
         setPreviewImage(URL.createObjectURL(file))
-        setError('') // Limpiamos el error si la imagen es válida
+        setError('')
       } else {
         setError('Por favor, selecciona una imagen válida')
         setPreviewImage(null)
@@ -31,9 +31,11 @@ function InitialSetupPage() {
     }
   }
 
-  // Manejador de subida de imagen de perfil
   const handleImageUpload = async (e) => {
     e.preventDefault()
+    setError('')
+    setSuccess('')
+
     if (!profileImage) {
       setError('Por favor, selecciona una imagen')
       return
@@ -42,6 +44,7 @@ function InitialSetupPage() {
     try {
       setLoading(true)
       await uploadProfileImageRequest(profileImage)
+      setSuccess('Imagen de perfil subida exitosamente')
     } catch (error) {
       setError('Error al subir la imagen, intenta de nuevo.')
     } finally {
@@ -49,15 +52,23 @@ function InitialSetupPage() {
     }
   }
 
-  // Manejador para la actualización del perfil
   const handleProfileUpdate = async (e) => {
     e.preventDefault()
+    setError('')
+    setSuccess('')
 
-    const profileData = { specialization, yearsOfExperience, clinicAddress, phone }
+    const profileData = {
+      fullname, // Incluir fullname en los datos del perfil
+      specialization,
+      yearsOfExperience,
+      clinicAddress,
+      phone
+    }
 
     try {
       setLoading(true)
       await updateProfileRequest(profileData)
+      setSuccess('Datos del perfil actualizados correctamente')
       navigate('/dashboard')
     } catch (error) {
       setError('Error al actualizar los datos del perfil, intenta de nuevo.')
@@ -69,34 +80,34 @@ function InitialSetupPage() {
   // Estilos en línea
   const styles = {
     body: {
-      margin: 0, // Elimina cualquier margen por defecto del body
-      padding: 0, // Elimina el padding por defecto
-      fontFamily: 'Arial, sans-serif', // Puedes cambiar la fuente si lo deseas
-      height: '100%', // Asegura que el body ocupe toda la altura de la ventana
-      boxSizing: 'border-box' // Para que el padding y borde no afecten el tamaño
+      margin: 0,
+      padding: 0,
+      fontFamily: 'Arial, sans-serif',
+      height: '100%',
+      boxSizing: 'border-box'
     },
     html: {
-      height: '100%', // Asegura que el HTML ocupe toda la altura
-      margin: 0, // Elimina margen por defecto
-      padding: 0 // Elimina padding por defecto
+      height: '100%',
+      margin: 0,
+      padding: 0
     },
     container: {
-      margin: 0, // Elimina márgenes del contenedor principal
-      padding: 0, // Elimina padding
+      margin: 0,
+      padding: 0,
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      minHeight: '100vh', // Asegura que el contenedor ocupe toda la altura visible
-      backgroundColor: '#3bbba4' // Fondo verde claro
+      minHeight: '100vh',
+      backgroundColor: '#3bbba4'
     },
     card: {
-      backgroundColor: '#fff', // Fondo blanco para la card
+      backgroundColor: '#fff',
       padding: '2rem',
       borderRadius: '12px',
       boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
       maxWidth: '600px',
       width: '100%',
-      marginBottom: '0' // Elimina cualquier margen debajo de la tarjeta
+      marginBottom: '0'
     },
     imageContainer: {
       width: '150px',
@@ -104,7 +115,7 @@ function InitialSetupPage() {
       objectFit: 'cover',
       borderRadius: '50%',
       marginBottom: '15px',
-      backgroundColor: '#f0f0f0', // Fondo gris si no hay imagen
+      backgroundColor: '#f0f0f0',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center'
@@ -132,20 +143,28 @@ function InitialSetupPage() {
       border: 'none',
       cursor: 'pointer',
       fontWeight: 'bold',
-      width: '100%' // Esto hace que los botones se estiren a lo largo del formulario
+      width: '100%'
     },
     secondaryButton: {
-      backgroundColor: '#3bbba4', // Botón color verde claro
+      backgroundColor: '#3bbba4',
       color: '#fff',
-      marginBottom: '1rem' // Agregado margen inferior para separar los botones
+      marginBottom: '1rem'
     },
     primaryButton: {
-      backgroundColor: '#3bbba4', // Botón color verde claro
+      backgroundColor: '#3bbba4',
       color: '#fff'
     },
     errorMessage: {
       backgroundColor: '#f8d7da',
       color: '#721c24',
+      padding: '0.75rem',
+      borderRadius: '4px',
+      marginBottom: '1rem',
+      textAlign: 'center'
+    },
+    successMessage: {
+      backgroundColor: '#d4edda',
+      color: '#155724',
       padding: '0.75rem',
       borderRadius: '4px',
       marginBottom: '1rem',
@@ -159,11 +178,10 @@ function InitialSetupPage() {
         <div style={styles.card}>
           <h2 className="text-center mb-4">Completa tu Perfil</h2>
 
-          {/* Mostrar el error si lo hay */}
+          {success && <div style={styles.successMessage}>{success}</div>}
           {error && <div style={styles.errorMessage}>{error}</div>}
 
           <div className="text-center mb-4">
-            {/* Imagen de perfil redondeada */}
             {previewImage ? (
               <img src={previewImage} alt="Vista previa de perfil" style={styles.imagePreview} />
             ) : (
@@ -173,13 +191,25 @@ function InitialSetupPage() {
               <input
                 type="file"
                 className="form-control"
-                accept="image/*" // Solo permite seleccionar imágenes
+                accept="image/*"
                 onChange={handleImageChange}
               />
             </div>
           </div>
 
           <form onSubmit={handleProfileUpdate}>
+            {/* Campo para Nombre Completo */}
+            <div className="form-group" style={styles.formControl}>
+              <label>Nombre Completo</label>
+              <input
+                type="text"
+                style={styles.inputField}
+                value={fullname}
+                onChange={(e) => setFullname(e.target.value)}
+                required
+              />
+            </div>
+            {/* Otros campos del formulario */}
             <div className="form-group" style={styles.formControl}>
               <label>Especialización</label>
               <input

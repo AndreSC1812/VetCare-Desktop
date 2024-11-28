@@ -14,7 +14,7 @@ function LoginPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault()
-    setError('')
+    setError('') // Limpiar los errores previos
 
     const credentials = { email, password, userType: 'veterinarian' }
 
@@ -29,7 +29,12 @@ function LoginPage() {
         setError('Error al iniciar sesión, intenta de nuevo')
       }
     } catch (error) {
-      setError('Error en la conexión, intenta de nuevo')
+      // Si el error tiene una respuesta del backend, mostramos el mensaje específico
+      if (error.response && error.response.data && error.response.data.message) {
+        setError(error.response.data.message)
+      } else {
+        setError('Error en la conexión, intenta de nuevo')
+      }
     } finally {
       setLoading(false)
     }
@@ -75,7 +80,7 @@ function LoginPage() {
                   type="button"
                   className="btn"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={{ border: 'none' }} // Quitar borde en el botón
+                  style={{ border: 'none' }}
                 >
                   <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
                 </button>
