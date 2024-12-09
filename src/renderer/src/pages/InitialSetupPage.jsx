@@ -67,9 +67,10 @@ function InitialSetupPage() {
 
     try {
       setLoading(true)
-      await updateProfileRequest(profileData)
+      await updateProfileRequest(profileData) // Llamada al backend para guardar los datos
+      localStorage.setItem('fullname', fullname) // Almacenar el fullname en localStorage
       setSuccess('Datos del perfil actualizados correctamente')
-      navigate('/dashboard')
+      navigate('/dashboard') // Redirigir al dashboard
     } catch (error) {
       setError('Error al actualizar los datos del perfil, intenta de nuevo.')
     } finally {

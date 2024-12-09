@@ -23,8 +23,18 @@ function LoginPage() {
       const response = await loginRequest(credentials)
 
       if (response.status === 200) {
-        localStorage.setItem('token', response.data.token)
-        navigate('/dashboard')
+        const { token, user } = response.data
+
+        // Guardar el token, fullname y id en el localStorage
+        localStorage.setItem('token', token)
+        localStorage.setItem('fullname', user.fullname)
+        localStorage.setItem('userId', user.id) // Guardando el id
+
+        const fullname = localStorage.getItem('fullname')
+        console.log(fullname) // Muestra el nombre completo del usuario
+        console.log(user.id) // Muestra el id del usuario
+
+        navigate('/dashboard') // Redirigir al dashboard
       } else {
         setError('Error al iniciar sesión, intenta de nuevo')
       }

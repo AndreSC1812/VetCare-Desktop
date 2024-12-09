@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from 'react'
 import { getClientsRequest, getClientByIdRequest } from '../api/clients'
 import { getPetsByClientRequest } from '../api/pets'
+import { sendNotificationRequest } from '../api/notifications'
+import { useNavigate } from 'react-router-dom'
 
 function ClientsPage() {
+  const navigate = useNavigate()
+
   const [clients, setClients] = useState([])
   const [filteredClients, setFilteredClients] = useState([])
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState('') // Error global para clientes
+  const [emailError, setEmailError] = useState('') // Error específico para el modal de correo
+  const [successMessage, setSuccessMessage] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedClient, setSelectedClient] = useState(null)
   const [isDetailScreen, setIsDetailScreen] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [emailMessage, setEmailMessage] = useState('')
 
   useEffect(() => {
     fetchClients()
@@ -46,6 +54,10 @@ function ClientsPage() {
     }
   }
 
+  const handleCreateReport = (pet) => {
+    navigate('/create-report', { state: { client: selectedClient, pet } })
+  }
+
   const handleClientClick = async (clientId) => {
     try {
       const clientResponse = await getClientByIdRequest(clientId)
@@ -65,6 +77,27 @@ function ClientsPage() {
   const handleBackToClients = () => {
     setIsDetailScreen(false)
     setSelectedClient(null)
+  }
+
+  const handleSendEmail = async () => {
+    const fullname = localStorage.getItem('fullname') // Nombre del veterinario
+    const to = selectedClient.email // Correo del cliente
+    const message = emailMessage // Mensaje del modal
+
+    if (!message.trim()) {
+      setEmailError('Por favor, escribe un mensaje antes de enviar.')
+      return
+    }
+
+    try {
+      await sendNotificationRequest({ to, fullname, message })
+      setIsDialogOpen(false) // Cierra el modal
+      setEmailMessage('') // Limpia el mensaje
+      setEmailError('') // Limpia el error del modal
+    } catch (error) {
+      console.error('Error al enviar el correo:', error)
+      setEmailError('Hubo un error al enviar el correo. Por favor, inténtalo de nuevo.')
+    }
   }
 
   // Estilos para la lista de clientes
@@ -121,6 +154,10 @@ function ClientsPage() {
     },
     error: {
       color: 'red',
+      textAlign: 'center'
+    },
+    success: {
+      color: 'green',
       textAlign: 'center'
     },
     loading: {
@@ -208,19 +245,59 @@ function ClientsPage() {
     }
   }
 
+  // Estilos del modal
+  const modalStyles = {
+    overlay: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 1000
+    },
+    modal: {
+      backgroundColor: 'white',
+      padding: '20px',
+      borderRadius: '10px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+      width: '400px',
+      maxWidth: '90%',
+      textAlign: 'center'
+    },
+    textarea: {
+      width: '100%',
+      height: '100px',
+      marginBottom: '20px',
+      padding: '10px',
+      border: '1px solid #ccc',
+      borderRadius: '5px'
+    },
+    button: {
+      margin: '0 10px',
+      padding: '10px 20px',
+      backgroundColor: '#3bbba4',
+      color: 'white',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer'
+    },
+    buttonHover: {
+      backgroundColor: '#32a792'
+    }
+  }
+
   return (
     <div>
       {isDetailScreen ? (
         <div style={detailStyles.container}>
-          {/* Botón "Volver" */}
           <button style={detailStyles.backButton} onClick={handleBackToClients}>
             Regresar
           </button>
-
-          {/* Título */}
           <h2 style={detailStyles.title}>Detalles del Usuario</h2>
-
-          {/* Card de detalles del cliente */}
           <div style={detailStyles.clientDetails}>
             <img
               src={selectedClient.profileImage || 'https://via.placeholder.com/100'}
@@ -229,8 +306,6 @@ function ClientsPage() {
             />
             <h3 style={detailStyles.fullname}>{selectedClient.fullname}</h3>
             <p style={detailStyles.username}>@{selectedClient.username || 'Usuario desconocido'}</p>
-
-            {/* Información adicional */}
             <div style={detailStyles.card}>
               <p style={detailStyles.cardItem}>
                 <strong>Email:</strong> {selectedClient.email}
@@ -242,7 +317,6 @@ function ClientsPage() {
                 <strong>Dirección:</strong> {selectedClient.address}
               </p>
             </div>
-            {/* Botón de enviar notificación */}
             <button
               style={{
                 backgroundColor: '#3bbba4',
@@ -255,12 +329,10 @@ function ClientsPage() {
                 margin: '20px auto',
                 display: 'block'
               }}
-              onClick={() => alert('Función aún no implementada')}
+              onClick={() => setIsDialogOpen(true)}
             >
               Enviar Notificación por Correo
             </button>
-
-            {/* Lista de mascotas */}
             <h4>Mascotas</h4>
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
               {selectedClient.pets.length > 0 ? (
@@ -274,6 +346,20 @@ function ClientsPage() {
                     <div>{pet.name}</div>
                     <div>{pet.species}</div>
                     <div>Edad: {pet.age}</div>
+                    <button
+                      style={{
+                        backgroundColor: '#3bbba4',
+                        color: 'white',
+                        padding: '5px 10px',
+                        border: 'none',
+                        borderRadius: '5px',
+                        marginTop: '10px',
+                        cursor: 'pointer'
+                      }}
+                      onClick={() => handleCreateReport(pet)}
+                    >
+                      Crear Informe
+                    </button>
                   </div>
                 ))
               ) : (
@@ -283,7 +369,6 @@ function ClientsPage() {
           </div>
         </div>
       ) : (
-        // Lista de clientes
         <div>
           <h2 style={listStyles.title}>Clientes</h2>
           <div style={listStyles.searchContainer}>
@@ -295,10 +380,9 @@ function ClientsPage() {
               style={listStyles.searchInput}
             />
           </div>
-
           {loading && <p style={listStyles.loading}>Cargando...</p>}
           {error && <p style={listStyles.error}>{error}</p>}
-
+          {successMessage && <p style={listStyles.success}>{successMessage}</p>}
           <div style={listStyles.clientListContainer}>
             {filteredClients.map((client) => (
               <div
@@ -315,6 +399,44 @@ function ClientsPage() {
                 <div style={listStyles.email}>{client.email}</div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+      {isDialogOpen && (
+        <div style={modalStyles.overlay}>
+          <div style={modalStyles.modal}>
+            <h2>Enviar Notificación</h2>
+            <textarea
+              value={emailMessage}
+              onChange={(e) => setEmailMessage(e.target.value)}
+              placeholder="Escribe tu mensaje aquí..."
+              style={modalStyles.textarea}
+            />
+            {emailError && <p style={{ color: 'red' }}>{emailError}</p>}
+            <button
+              style={modalStyles.button}
+              onClick={handleSendEmail}
+              onMouseOver={(e) =>
+                (e.target.style.backgroundColor = modalStyles.buttonHover.backgroundColor)
+              }
+              onMouseOut={(e) =>
+                (e.target.style.backgroundColor = modalStyles.button.backgroundColor)
+              }
+            >
+              Enviar
+            </button>
+            <button
+              style={modalStyles.button}
+              onClick={() => setIsDialogOpen(false)}
+              onMouseOver={(e) =>
+                (e.target.style.backgroundColor = modalStyles.buttonHover.backgroundColor)
+              }
+              onMouseOut={(e) =>
+                (e.target.style.backgroundColor = modalStyles.button.backgroundColor)
+              }
+            >
+              Cancelar
+            </button>
           </div>
         </div>
       )}

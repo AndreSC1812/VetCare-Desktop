@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import ClientsPage from './ClientsPage' // Importar el nuevo componente
+import ReportsPage from './ReportsPage'
 
 function DashboardPage() {
   const [activeTab, setActiveTab] = useState('clientes')
@@ -8,8 +9,8 @@ function DashboardPage() {
     switch (activeTab) {
       case 'clientes':
         return <ClientsPage />
-      case 'historial':
-        return <p>Historial Médico: Información médica de los clientes.</p>
+      case 'informes':
+        return <ReportsPage />
       case 'citas':
         return <p>Citas: Gestión de citas para las consultas.</p>
       case 'perfil':
@@ -76,7 +77,7 @@ function DashboardPage() {
       <div style={styles.sidebar}>
         <div style={styles.appTitle}>Vetcare</div>
         <ul style={styles.tabList}>
-          {['clientes', 'historial', 'citas', 'perfil'].map((tab) => (
+          {['clientes', 'informes', 'citas', 'perfil'].map((tab) => (
             <li
               key={tab}
               style={{
