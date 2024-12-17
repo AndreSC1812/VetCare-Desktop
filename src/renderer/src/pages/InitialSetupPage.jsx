@@ -3,15 +3,17 @@ import { useNavigate } from 'react-router-dom'
 import { uploadProfileImageRequest, updateProfileRequest } from '../api/profile'
 
 function InitialSetupPage() {
-  const [fullname, setFullname] = useState('') // Nuevo estado para el nombre completo
+  const [fullname, setFullname] = useState('')
   const [specialization, setSpecialization] = useState('')
   const [yearsOfExperience, setYearsOfExperience] = useState('')
   const [clinicAddress, setClinicAddress] = useState('')
   const [phone, setPhone] = useState('')
+  const [startTime, setStartTime] = useState('') // Nuevo estado para la hora de inicio
+  const [endTime, setEndTime] = useState('') // Nuevo estado para la hora de fin
   const [profileImage, setProfileImage] = useState(null)
   const [previewImage, setPreviewImage] = useState(null)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('') // Nuevo estado para el mensaje de éxito
+  const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
@@ -58,19 +60,21 @@ function InitialSetupPage() {
     setSuccess('')
 
     const profileData = {
-      fullname, // Incluir fullname en los datos del perfil
+      fullname,
       specialization,
       yearsOfExperience,
       clinicAddress,
-      phone
+      phone,
+      startTime, // Incluir la hora de inicio
+      endTime // Incluir la hora de fin
     }
 
     try {
       setLoading(true)
-      await updateProfileRequest(profileData) // Llamada al backend para guardar los datos
-      localStorage.setItem('fullname', fullname) // Almacenar el fullname en localStorage
+      await updateProfileRequest(profileData)
+      localStorage.setItem('fullname', fullname)
       setSuccess('Datos del perfil actualizados correctamente')
-      navigate('/dashboard') // Redirigir al dashboard
+      navigate('/dashboard')
     } catch (error) {
       setError('Error al actualizar los datos del perfil, intenta de nuevo.')
     } finally {
@@ -78,7 +82,6 @@ function InitialSetupPage() {
     }
   }
 
-  // Estilos en línea
   const styles = {
     body: {
       margin: 0,
@@ -199,7 +202,6 @@ function InitialSetupPage() {
           </div>
 
           <form onSubmit={handleProfileUpdate}>
-            {/* Campo para Nombre Completo */}
             <div className="form-group" style={styles.formControl}>
               <label>Nombre Completo</label>
               <input
@@ -210,7 +212,6 @@ function InitialSetupPage() {
                 required
               />
             </div>
-            {/* Otros campos del formulario */}
             <div className="form-group" style={styles.formControl}>
               <label>Especialización</label>
               <input
@@ -246,6 +247,27 @@ function InitialSetupPage() {
                 style={styles.inputField}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+            {/* Campos para horarios */}
+            <div className="form-group" style={styles.formControl}>
+              <label>Hora de Inicio</label>
+              <input
+                type="time"
+                style={styles.inputField}
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group" style={styles.formControl}>
+              <label>Hora de Fin</label>
+              <input
+                type="time"
+                style={styles.inputField}
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                required
               />
             </div>
 

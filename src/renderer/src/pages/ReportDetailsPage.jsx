@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { getReportByIdRequest } from '../api/report'
+import { getReportByIdRequest, updateReportRequest, deleteReportRequest } from '../api/report'
 import { jsPDF } from 'jspdf'
 
 function ReportDetailsPage() {
@@ -9,6 +9,9 @@ function ReportDetailsPage() {
   const [report, setReport] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editedReport, setEditedReport] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -18,6 +21,7 @@ function ReportDetailsPage() {
         try {
           const fetchedReport = await getReportByIdRequest(reportId)
           setReport(fetchedReport)
+          setEditedReport(fetchedReport)
         } catch (err) {
           setError('No se pudo obtener el informe.')
         } finally {
@@ -28,67 +32,83 @@ function ReportDetailsPage() {
     }
   }, [reportId])
 
-  if (error) {
-    return <p>{error}</p>
+  const handleEditChange = (e) => {
+    const { name, value } = e.target
+    setEditedReport({
+      ...editedReport,
+      [name]: value
+    })
   }
 
-  if (loading || !report) {
-    return <p>Cargando...</p>
+  const handleEditSubmit = async () => {
+    try {
+      await updateReportRequest(reportId, editedReport)
+      setReport(editedReport)
+      setShowEditModal(false)
+    } catch (error) {
+      setError('No se pudo actualizar el informe.')
+    }
   }
 
   const handleEditClick = () => {
-    // Aquí puedes agregar la lógica para editar en el futuro
-    console.log('Editar clickeado')
+    setShowEditModal(true)
   }
 
   const handleDeleteClick = () => {
-    // Aquí puedes agregar la lógica para eliminar en el futuro
-    console.log('Eliminar clickeado')
+    setShowDeleteModal(true)
+  }
+
+  const confirmDelete = async () => {
+    setShowDeleteModal(false)
+
+    try {
+      await deleteReportRequest(reportId)
+      navigate('/dashboard')
+    } catch (error) {
+      setError('No se pudo eliminar el informe.')
+    }
+  }
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false)
   }
 
   const handleExportToPDF = () => {
     const doc = new jsPDF()
 
-    // Definir colores
-    const primaryColor = '#3bbba4' // El color principal que se usará para los rectángulos
-    const textColor = '#333' // El color del texto (negro en este caso)
+    const primaryColor = '#3bbba4'
+    const textColor = '#333'
 
-    // Título del informe
     doc.setFontSize(18)
     doc.setTextColor(primaryColor)
     doc.text('Detalles del Informe', 20, 20)
 
-    // Datos del Cliente
     doc.setFontSize(12)
-    doc.setTextColor(textColor) // Usar texto negro para los datos del cliente
+    doc.setTextColor(textColor)
     doc.text(`Nombre del Dueño: ${report.ownerName}`, 20, 50)
     doc.text(`Teléfono del Dueño: ${report.ownerPhone}`, 20, 60)
     doc.text(`Email del Dueño: ${report.ownerEmail}`, 20, 70)
 
-    // Añadir bordes y sombreado para la sección de Datos del Cliente
-    doc.setDrawColor(200, 200, 200) // Color del borde
-    doc.setFillColor(primaryColor) // Cambiar a primaryColor
+    doc.setDrawColor(200, 200, 200)
+    doc.setFillColor(primaryColor)
     doc.rect(15, 30, 180, 10, 'F')
-    doc.setTextColor('white') // Color del texto dentro del rectángulo
+    doc.setTextColor('white')
     doc.text('Datos del Cliente', 18, 35)
 
-    // Datos de la Mascota
     doc.setFontSize(12)
-    doc.setTextColor(textColor) // Usar texto negro para los datos de la mascota
+    doc.setTextColor(textColor)
     doc.text(`Nombre de la Mascota: ${report.petName}`, 20, 100)
     doc.text(`Número de Chip: ${report.chipNumber}`, 20, 110)
     doc.text(`Especie: ${report.species}`, 20, 120)
     doc.text(`Peso: ${report.weight} kg`, 20, 130)
 
-    // Añadir bordes y sombreado para la sección de Datos de la Mascota
     doc.setFillColor(primaryColor)
     doc.rect(15, 80, 180, 10, 'F')
-    doc.setTextColor('white') // Cambiar color del texto (blanco) para la siguiente sección
+    doc.setTextColor('white')
     doc.text('Datos de la Mascota', 18, 85)
 
-    // Informe
     doc.setFontSize(12)
-    doc.setTextColor(textColor) // Usar texto negro para el informe
+    doc.setTextColor(textColor)
     doc.text(`Fecha de Consulta: ${report.consultationDate}`, 20, 160)
     doc.text(`Motivo de Consulta: ${report.consultationReason}`, 20, 170)
     doc.text(`Signos Clínicos: ${report.clinicalSigns}`, 20, 180)
@@ -96,18 +116,29 @@ function ReportDetailsPage() {
     doc.text(`Tratamiento: ${report.treatment}`, 20, 200)
     doc.text(`Recomendaciones: ${report.recommendations}`, 20, 210)
 
-    // Añadir bordes y sombreado para la sección del Informe
     doc.setFillColor(primaryColor)
     doc.rect(15, 150, 180, 10, 'F')
-    doc.setTextColor('white') // Cambiar color del texto (blanco) para la siguiente sección
+    doc.setTextColor('white')
     doc.text('Informe', 18, 155)
 
-    // Generar el PDF
     doc.save(`Informe_${report.petName}_${report.ownerName}.pdf`)
   }
 
   const handleBackClick = () => {
     navigate(-1)
+  }
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('es-ES') // Formato de fecha en español (España)
+  }
+
+  if (error) {
+    return <p>{error}</p>
+  }
+
+  if (loading || !report) {
+    return <p>Cargando...</p>
   }
 
   const styles = {
@@ -164,19 +195,6 @@ function ReportDetailsPage() {
       marginBottom: '10px',
       marginRight: '10px'
     },
-    editButton: {
-      padding: '10px 20px',
-      backgroundColor: '#3bbba4',
-      color: 'white',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer',
-      fontSize: '16px',
-      marginTop: '10px',
-      transition: 'background-color 0.3s ease',
-      marginBottom: '10px',
-      marginRight: '10px'
-    },
     actionButton: {
       padding: '10px 20px',
       backgroundColor: '#ff5733',
@@ -202,6 +220,42 @@ function ReportDetailsPage() {
       fontSize: '16px',
       cursor: 'pointer',
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+    },
+    modalOverlay: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    modalContent: {
+      backgroundColor: 'white',
+      padding: '20px',
+      borderRadius: '10px',
+      textAlign: 'center',
+      width: '300px',
+      boxShadow: '0px 0px 15px rgba(0,0,0,0.1)'
+    },
+    modalButton: {
+      padding: '10px 20px',
+      backgroundColor: '#3bbba4',
+      color: 'white',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      margin: '10px'
+    },
+    input: {
+      width: '100%',
+      padding: '10px',
+      marginBottom: '10px',
+      borderRadius: '5px',
+      border: '1px solid #ddd',
+      fontSize: '14px'
     }
   }
 
@@ -247,7 +301,7 @@ function ReportDetailsPage() {
           <div>
             <h3 style={styles.sectionTitle}>Informe</h3>
             <div style={styles.detail}>
-              <strong>Fecha de Consulta:</strong> {report.consultationDate}
+              <strong>Fecha de Consulta:</strong> {formatDate(report.consultationDate)}
             </div>
             <div style={styles.detail}>
               <strong>Motivo de Consulta:</strong> {report.consultationReason}
@@ -270,8 +324,8 @@ function ReportDetailsPage() {
             <button style={styles.button} onClick={handleExportToPDF}>
               Exportar a PDF
             </button>
-            <button style={styles.editButton} onClick={handleEditClick}>
-              Editar
+            <button style={styles.button} onClick={handleEditClick}>
+              Editar Informe
             </button>
             <button style={styles.actionButton} onClick={handleDeleteClick}>
               Eliminar
@@ -279,6 +333,72 @@ function ReportDetailsPage() {
           </div>
         </div>
       </div>
+
+      {/* Modal de edición */}
+      {showEditModal && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <h3>Editar Informe</h3>
+            <input
+              style={styles.input}
+              type="text"
+              name="consultationReason"
+              value={editedReport.consultationReason}
+              onChange={handleEditChange}
+              placeholder="Motivo de consulta"
+            />
+            <textarea
+              style={styles.input}
+              name="clinicalSigns"
+              value={editedReport.clinicalSigns}
+              onChange={handleEditChange}
+              placeholder="Signos clínicos"
+            />
+            <textarea
+              style={styles.input}
+              name="diagnosis"
+              value={editedReport.diagnosis}
+              onChange={handleEditChange}
+              placeholder="Diagnóstico"
+            />
+            <textarea
+              style={styles.input}
+              name="treatment"
+              value={editedReport.treatment}
+              onChange={handleEditChange}
+              placeholder="Tratamiento"
+            />
+            <textarea
+              style={styles.input}
+              name="recommendations"
+              value={editedReport.recommendations}
+              onChange={handleEditChange}
+              placeholder="Recomendaciones"
+            />
+            <button style={styles.modalButton} onClick={handleEditSubmit}>
+              Guardar Cambios
+            </button>
+            <button style={styles.modalButton} onClick={() => setShowEditModal(false)}>
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de confirmación de eliminación */}
+      {showDeleteModal && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <h3>¿Estás seguro de eliminar este informe?</h3>
+            <button style={styles.modalButton} onClick={confirmDelete}>
+              Confirmar
+            </button>
+            <button style={styles.modalButton} onClick={cancelDelete}>
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

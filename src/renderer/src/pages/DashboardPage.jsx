@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import ClientsPage from './ClientsPage' // Importar el nuevo componente
 import ReportsPage from './ReportsPage'
+import AppointmentsPage from './AppointmentsPage'
+import VetProfilePage from './VetProfilePage'
 
 function DashboardPage() {
   const [activeTab, setActiveTab] = useState('clientes')
@@ -12,9 +14,9 @@ function DashboardPage() {
       case 'informes':
         return <ReportsPage />
       case 'citas':
-        return <p>Citas: Gestión de citas para las consultas.</p>
+        return <AppointmentsPage />
       case 'perfil':
-        return <p>Perfil: Aquí puedes gestionar tu información personal.</p>
+        return <VetProfilePage />
       default:
         return null
     }

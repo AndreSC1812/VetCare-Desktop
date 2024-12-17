@@ -38,6 +38,7 @@ function RegisterPage() {
 
       if (response.status === 201) {
         localStorage.setItem('token', response.data.token)
+        localStorage.setItem('fullname', response.data.user.fullname)
         navigate('/setup')
       } else {
         setError('Error al registrar, intenta de nuevo')

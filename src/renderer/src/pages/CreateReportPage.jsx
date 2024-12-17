@@ -8,7 +8,6 @@ function CreateReportPage() {
   const location = useLocation()
 
   const { client, pet } = location.state || {} // Usamos location.state para recibir datos
-  const veterinarianName = localStorage.getItem('fullname') // Nombre del veterinario desde localStorage
 
   const initialFormData = {
     ownerName: client?.fullname || '',

@@ -1,7 +1,6 @@
 import axios from 'axios'
 
-// Definimos la URL base de la API
-const API = 'http://localhost:3000'
+const API = 'https://vetcare-backend-bm97.onrender.com'
 
 // Función para obtener todos los clientes
 export const getClientsRequest = () => axios.get(`${API}/api/clients`)
